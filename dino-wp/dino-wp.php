@@ -3,7 +3,7 @@
 Plugin Name: DINO WP
 Plugin URI: http://www.dino.com.br
 Description: Ferramenta para visualização de notícias distribuídas pelo DINO - Visibilidade Online.
-Version: 1.0.2
+Version: 1.0.0
 Author: DINO
 Author URI: http://www.dino.com.br
 License: GPL2
