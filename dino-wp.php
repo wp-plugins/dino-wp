@@ -121,7 +121,7 @@ $date = new DateTime($release->{'PublishedDate'});
 if($release == NULL || $releaseid == NULL)
 {
     $posts[0]->post_title = "Notícia não localizada";
-    $posts[0]->post_content = '<div class="entry-content"><p>Parece que algum estagiário esqueceu de alimentar o DINO.</p></div>';
+    $posts[0]->post_content = '<div class="entry-content"><p>Notícia não encontrada, verifique o endereço digitado.</p></div>';
 }else
 {
     $posts[0]->post_title = $release->{'Title'};
