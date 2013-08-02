@@ -41,7 +41,7 @@ A instalação do plugin é bastante simples.
 == Changelog ==
 = 1.0.1 =
 * 2013-08-02
-* Concerto de alguns bugs, e adicionada a opção de estilizar o "titulo" do release por css.
+* Reparo de alguns bugs, e adicionada a opção de estilizar o "titulo" do release por css.
 
 = 1.0.0 =
 * 2013-06-20
