@@ -28,7 +28,7 @@ function dino_plugin_install() {
 
     global $wpdb;
 
-    $the_page_title = "DINO - Divulgador e Visibilidade Online";
+    $the_page_title = "newsdino";
     $the_page_name = 'DINO';
 
     $options = '.dinotitulo{display:none;} .dinoresumo{color:#808080;margin-top: 5px;text-align: left;} .dinodata{text-align: right;}';
