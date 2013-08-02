@@ -3,7 +3,7 @@
 Plugin Name: DINO WP
 Plugin URI: http://www.dino.com.br
 Description: Ferramenta para visualização de notícias distribuídas pelo DINO - Visibilidade Online.
-Version: 1.0.0
+Version: 1.0.1
 Author: DINO
 Author URI: http://www.dino.com.br
 License: GPL2
@@ -31,7 +31,7 @@ function dino_plugin_install() {
     $the_page_title = "DINO - Divulgador e Visibilidade Online";
     $the_page_name = 'DINO';
 
-    $options = '.dinoresumo{color:#808080;margin-top: 5px;text-align: left;} .dinodata{text-align: right;}';
+    $options = '.dinotitulo{display:none;} .dinoresumo{color:#808080;margin-top: 5px;text-align: left;} .dinodata{text-align: right;}';
 
     delete_option("dino_plugin_page_title");
     add_option("dino_plugin_page_title", $the_page_title, '', 'yes');
@@ -106,6 +106,9 @@ global $wp_query;
 
 global $_GET;
 
+if(!is_null($wp_query))
+{
+
 if( $wp_query->get('dino_plugin_page_is_called') ) {
 
 $releaseid = $_GET["releaseid"];
@@ -125,12 +128,13 @@ if($release == NULL || $releaseid == NULL)
 }else
 {
     $posts[0]->post_title = $release->{'Title'};
-    $posts[0]->post_content = '<style>'.dino_css().'</style><div><h2 class="dinoresumo">'.$release->{'Summary'}.'</h2><div class="dinodata"><p>'.$date->format("d/m/Y").'</p></div><div class="dinocorpo entry-content">'.$release->{'Body'}.'</div><div class="dinolink"><a href="'.$release->{'SourceUrl'}.'">Leia mais</a></div></div>';
+    $posts[0]->post_content = '<style>'.dino_css().'</style><div class="dinotitulo"><h1>'.$release->{'Title'}.'</h1></div><div><h2 class="dinoresumo">'.$release->{'Summary'}.'</h2><div class="dinodata"><p>'.$date->format("d/m/Y").'</p></div><div class="dinocorpo entry-content">'.$release->{'Body'}.'</div><div class="dinolink"><a href="'.$release->{'SourceUrl'}.'">Leia mais</a></div></div>';
 }
 }
 
 return $posts;
 
+}
 }
 
 function dino_plugin_query_parser( $q ) {
@@ -182,9 +186,6 @@ function dinopagelink(){
     return $actual_link;
 }
 
-?>
-
-<?php
 class wctest{
     public function __construct(){
         if(is_admin()){
@@ -232,7 +233,7 @@ class wctest{
     	
 	add_settings_field(
 	    'dino_plugin_option', 
-	    'Classes: dinoresumo, dinodata, dinocorpo, dinolink', 
+	    'Classes: dinotitulo, dinoresumo, dinodata, dinocorpo, dinolink', 
 	    array($this, 'create_css_field'), 
 	    'dino-setting-admin',
 	    'sessao_aparencia'			
