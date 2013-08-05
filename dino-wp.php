@@ -152,13 +152,17 @@ if($release == NULL || $releaseid == NULL)
     $posts[0]->post_title = $release->{'Title'};
 
     $cont .= '<div class="dinotitulo"><h1 class="entry-title">'.$release->{'Title'}.'</h1></div><div><h2 class="dinoresumo ">'.$release->{'Summary'}.'</h2><div class="dinodata"><p>'.$date->format("d/m/Y").'</p></div><div class="dinocorpo entry-content">'.$release->{'Body'}.'</div><br/><div class="dinolink"><a href="'.$release->{'SourceUrl'}.'">Leia mais</a></div></div><style>.dinotitulo{'.$css["Titulo"].'}.dinoresumo{'.$css["Resumo"].'}.dinodata{'.$css["Data"].'}.dinocorpo{'.$css["Corpo"].'}.dinolink{'.$css["Link"].'}'.$css["Livre"].'</style>';
+    
+    $analytics =  '<script type="text/javascript" title="Analytics">';
+           $analytics .= "var _gaq = _gaq || [];_gaq.push(['_setAccount', 'UA-28239442-1']);";
+           $analytics .= "_gaq.push(['_setCustomVar', 1, 'partner', '".$opti["Parceiro"]."', 3]);_gaq.push(['_setCustomVar', 2, 'release', '".$releaseid."', 3]);_gaq.push(['_trackPageview']);";
+           $analytics .= "(function () {var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);})();</script>";
 
-    $posts[0]->post_content = $cont;
+    $posts[0]->post_content = $cont.$analytics;
 
     $hook = add_action("wp_head","page_meta");
 
-    function page_meta()
-    {
+    function page_meta(){
         $releaseid2 = $_GET["releaseid"];
         $url2 = "http://www.dino.com.br/api/news/".$releaseid2;
         $json2 = file_get_contents($url2);
@@ -175,7 +179,7 @@ if($release == NULL || $releaseid == NULL)
         return print($metaContent);
     }
 
-    do_action("$hook");    
+    do_action("$hook");
 }
 }
 
