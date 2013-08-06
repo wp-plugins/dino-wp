@@ -162,6 +162,8 @@ if($release == NULL || $releaseid == NULL)
 
     $hook = add_action("wp_head","page_meta");
 
+if(!function_exists("page_meta"))
+{
     function page_meta(){
         $releaseid2 = $_GET["releaseid"];
         $url2 = "http://www.dino.com.br/api/news/".$releaseid2;
@@ -178,7 +180,7 @@ if($release == NULL || $releaseid == NULL)
 
         return print($metaContent);
     }
-
+}
     do_action("$hook");
 }
 }
@@ -344,7 +346,7 @@ class wctest{
     ?>
         <div>
             <h3>CSS Livre</h3>
-            <textarea style="width:100%; width: 80%; height:30px;" name="dino_plugin_option_css[Livre]" id="dinocss1"><?php echo $op["Livre"] ?></textarea>
+            <textarea style="width:100%; width: 80%; height:100px;" name="dino_plugin_option_css[Livre]" id="dinocss1"><?php echo $op["Livre"] ?></textarea>
         </div>
 
         <div>
