@@ -3,7 +3,7 @@
 Plugin Name: DINO WP
 Plugin URI: http://www.dino.com.br
 Description: Ferramenta para visualização de notícias distribuídas pelo DINO - Visibilidade Online.
-Version: 1.0.2
+Version: 1.0.3
 Author: DINO
 Author URI: http://www.dino.com.br
 License: GPL2
@@ -38,9 +38,12 @@ function dino_plugin_install() {
     $cssCorpo = "";
     $cssLink = "";
 
+    $widgetH = 550;
+    $widgetW = 250;
+
     $optionsCss = array("Livre" => $cssLivre, "Titulo" => $cssTitulo, "Resumo" => $cssResumo, "Data" => $cssData, "Corpo" => $cssCorpo, "Link" => $cssLink);
     $options = array("Parceiro" => "", "Html" => "");
-
+    $optionsWidget = array("Height" => $widgetH, "Width" => $widgetW);
 
     delete_option("dino_plugin_page_title");
     add_option("dino_plugin_page_title", $the_page_title, '', 'yes');
@@ -56,6 +59,9 @@ function dino_plugin_install() {
 
     delete_option("dino_plugin_option_css");
     add_option("dino_plugin_option_css", $optionsCss, '', 'yes');
+
+    delete_option("dino_plugin_widget");
+    add_option("dino_plugin_widget", $optionsWidget, '', 'yes');
 
     $the_page = get_page_by_title( $the_page_title);
 
@@ -110,6 +116,7 @@ function dino_plugin_remove() {
     delete_option("dino_plugin_page_id");
     delete_option("dino_plugin_option");
     delete_option("dino_plugin_option_css");
+    delete_option("dino_plugin_widget");
 
 }
 
@@ -228,11 +235,9 @@ function register_dinosettings() {
     register_setting( 'dino_settings_group', 'dino_plugin_option_css' );
 }
 
-function encurtador($texto, $tamanho)
-{
+function encurtador($texto, $tamanho){
     $t = strip_tags($texto);
-    if(strlen($texto) > $tamanho)
-    {
+    if(strlen($texto) > $tamanho){
         return substr($t,0,$tamanho-3).'...';
     }
     return $t;
@@ -398,4 +403,73 @@ class wctest{
     <?php
     }
 }
+
+////Widget
+//get_option("dino_plugin_widget");
+class wp_dino_widget extends WP_Widget {
+    
+	// constructor
+	function wp_dino_widget() {
+        $wOp = get_option("dino_plugin_widget");
+
+
+        $widget_ops = array( 'classname' => 'dinoList ', 'description' => __('Lista dos ultimos relases distribuidos no DINO.', 'dinoList') );  
+
+		parent::WP_Widget(false, $name = __('DINO Widget', 'wp_dino_widget'), $widget_ops);
+	}
+
+	// widget form creation
+	function form($instance) {
+     $wOp = get_option("dino_plugin_widget");  
+      	
+	// Check values
+    if( $instance) { 
+     $h = esc_attr($instance['height']); 
+     $w = esc_attr($instance['width']);
+} else { 
+     $h = $wOp["Height"]; 
+     $w = $wOp["Width"]; 
+} 
+		?>
+		<p>
+		    <label for="<?php echo $this->get_field_name( 'height' ); ?>"><?php _e( 'Altura:' ); ?></label> 
+		    <input style="width: 50px;" id="<?php echo $this->get_field_id( 'height' ); ?>" name="<?php echo $this->get_field_name( 'height' ); ?>" type="text" value="<?php echo esc_attr( $h ); ?>" />
+		    <label> px</label>
+        </p>
+
+        <p>
+		    <label for="<?php echo $this->get_field_name( 'width' ); ?>"><?php _e( 'Largura:' ); ?></label> 
+		    <input style="width: 50px;" id="<?php echo $this->get_field_id( 'width' ); ?>" name="<?php echo $this->get_field_name( 'width' ); ?>" type="text" value="<?php echo esc_attr( $w ); ?>" />
+		    <label> px</label>
+        </p>
+		<?php 
+	}
+
+	// widget update
+	function update($new_instance, $old_instance) {
+		$instance = $old_instance;
+      // Fields
+      $instance['height'] = strip_tags($new_instance['height']);
+      $instance['width'] = strip_tags($new_instance['width']);
+     return $instance;
+	}
+
+	// widget display
+	function widget($args, $instance) {
+        extract( $args );
+
+        $options = get_option("dino_plugin_option");
+        $pID = $options["Parceiro"];
+
+        $h = $instance['height'];
+        $w = $instance['width'];
+
+		echo '<iframe id="dinoFrame2" border="0" style="min-height:80px" name="widget" height="'.$h.'px" src="http://www.dino.com.br/widget/index?partnerid='.$pID.'" width="'.$w.'px" overflow:="" "hidden"="" marginheight="0" marginwidth="0" frameborder="no" scrolling="no"></iframe>';
+	}
+}
+
+// register widget
+add_action('widgets_init', create_function('', 'return register_widget("wp_dino_widget");'));
+
+
 ?>
