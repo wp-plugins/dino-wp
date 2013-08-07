@@ -10,7 +10,7 @@ Ferramenta para vizualização de notícias distribuídas pelo DINO - Visibilidade O
 
 == Description ==
 
-DINO é uma abreviação de DIvulgador de NOtícias e foi criado para divulgar a sua notícia ou a de seu cliente!
+O DINO é uma ferramenta que  permite aos profissionais e não profissionais da área de comunicação, alavancar um release ou comunicado de imprensa para interagir com o seu público-alvo, com o objetivo de dar uma maior VISIBILIDADE ONLINE  a informação.
 
 Esse plugin tem a função de divulgar as notícias distribuidas no DINO, trazendo conteudo e mais visibilidade ao seu site.
 
@@ -18,7 +18,7 @@ O plugin possui a opção para configurar o css da notícia no seu site.
 
 A opção de customização da notícia esta em constante desenvolvimento.
 
-Se voccê tiver problemas com o plugin ou quer sugerir alguma modificação, por favor entre em contato com [DINO](mailto://oquetananet.com/contato/).
+Se voccê tiver problemas com o plugin ou quer sugerir alguma modificação, por favor entre em contato com [DINO](mailto://contato@dino.com.br/).
 
 == Installation ==
 
@@ -33,7 +33,7 @@ A instalação do plugin é bastante simples.
 
 = Preciso me cadastrar em algum lugar para usar este plugin? =
 
- Sim! Esse plugin é direcionado aos parceiros do DINO. Para mais informações entre em contato com [DINO](mailto://oquetananet.com/contato/).
+ Sim! Esse plugin é direcionado aos parceiros do DINO. Para mais informações entre em contato com [DINO](mailto://contato@dino.com.br/).
 
 == Screenshots ==
 =
