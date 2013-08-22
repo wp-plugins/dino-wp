@@ -3,7 +3,7 @@
 Plugin Name: DINO WP
 Plugin URI: http://www.dino.com.br
 Description: Ferramenta para visualização de notícias distribuídas pelo DINO - Visibilidade Online.
-Version: 1.0.3
+Version: 1.0.4
 Author: DINO
 Author URI: http://www.dino.com.br
 License: GPL2
@@ -33,15 +33,17 @@ function dino_plugin_install() {
 
     $cssLivre = "";
     $cssTitulo = "display:none;";
-    $cssResumo = "color:#808080; margin-top:5px; text-align:left;";
-    $cssData = "text-align:right;";
+    $cssResumo = "color:#808080; margin-top:5px; display:inline;";
+    $cssLocal = "color:#08c; font-weight:bold;";
+    $cssData = "font-weight:bold;";
     $cssCorpo = "";
     $cssLink = "";
+    $cssArquivos = "float:right; margin:3%; width:40%;";
 
     $widgetH = 550;
     $widgetW = 250;
 
-    $optionsCss = array("Livre" => $cssLivre, "Titulo" => $cssTitulo, "Resumo" => $cssResumo, "Data" => $cssData, "Corpo" => $cssCorpo, "Link" => $cssLink);
+    $optionsCss = array("Livre" => $cssLivre, "Titulo" => $cssTitulo, "Resumo" => $cssResumo, "Local" => $cssLocal, "Data" => $cssData, "Corpo" => $cssCorpo, "Link" => $cssLink, "Arquivos" => $cssArquivos);
     $options = array("Parceiro" => "", "Html" => "");
     $optionsWidget = array("Height" => $widgetH, "Width" => $widgetW);
 
@@ -158,14 +160,34 @@ if($release == NULL || $releaseid == NULL)
 {
     $posts[0]->post_title = $release->{'Title'};
 
-    $cont .= '<div class="dinotitulo"><h1 class="entry-title">'.$release->{'Title'}.'</h1></div><div><h2 class="dinoresumo ">'.$release->{'Summary'}.'</h2><div class="dinodata"><p>'.$date->format("d/m/Y").'</p></div><div class="dinocorpo entry-content">'.$release->{'Body'}.'</div><br/><div class="dinolink"><a href="'.$release->{'SourceUrl'}.'">Leia mais</a></div></div><style>.dinotitulo{'.$css["Titulo"].'}.dinoresumo{'.$css["Resumo"].'}.dinodata{'.$css["Data"].'}.dinocorpo{'.$css["Corpo"].'}.dinolink{'.$css["Link"].'}'.$css["Livre"].'</style>';
+    $cont .= '<div class="dinotitulo"><h1 class="entry-title">'.$release->{'Title'}.'</h1></div>';
+    $cont .= '<div><div id="dresumo"><span class="dinolocal">'.$release->{'Place'}.' </span><span class="dinodata">'.$date->format("d/m/Y").'</span> - <h2 class="dinoresumo ">'.$release->{'Summary'}.'</h2></div>';
+    $cont .= '<div class="dinoarquivos">';
+    if($release->{'ImageID'} != NULL)
+    {
+        $cont .= '<img itemprop="photo" src="'.$release->{'MainPictureUrl'}.'"/><br/>';
+    }
+
+    if($release->{'VideoUrl'} != NULL)
+    {
+        $cont .= '<br/><iframe src="'.$release->{'VideoUrl'}.'?rel=0" frameborder="0" allowfullscreen></iframe>';
+    }
+
+    $cont .= '</div><p class="dinocorpo entry-content"><br/>'.$release->{'Body'}.'</p>';
+    $cont .= '<div class="dinolink"><a href="'.$release->{'SourceUrl'}.'">Leia mais</a></div></div>';
+    $cont .= '<style>.dinotitulo{'.$css["Titulo"].'}.dinoresumo{'.$css["Resumo"].'}.dinolocal{'.$css["Local"].'}.dinodata{'.$css["Data"].'}.dinocorpo{'.$css["Corpo"].'}.dinolink{'.$css["Link"].'}.dinoarquivos{'.$css["Arquivos"].'}#dresumo br{display:none;}'.$css["Livre"].'</style>';
     
+
+
     $analytics =  '<script type="text/javascript" title="Analytics">';
            $analytics .= "var _gaq = _gaq || [];_gaq.push(['_setAccount', 'UA-28239442-1']);";
            $analytics .= "_gaq.push(['_setCustomVar', 1, 'partner', '".$opti["Parceiro"]."', 3]);_gaq.push(['_setCustomVar', 2, 'release', '".$releaseid."', 3]);_gaq.push(['_trackPageview']);";
            $analytics .= "(function () {var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);})();</script>";
 
-    $posts[0]->post_content = $cont.$analytics;
+    $ti = get_bloginfo();
+    $script = '<script type="text/javascript" title="Titulo">var titulo = "'.$release->{'Title'}." | ".$ti.'"; if (document.title.search("newsdino") !== -1){ document.title = titulo; } </script>';
+
+    $posts[0]->post_content = $cont.$analytics.$script;
 
     $hook = add_action("wp_head","page_meta");
 
@@ -325,7 +347,7 @@ class wctest{
     	
 	add_settings_field(
 	    'dino_plugin_option_css', 
-	    'Classes: dinotitulo, dinoresumo, dinodata, dinocorpo, dinolink', 
+	    'Classes: dinotitulo, dinoresumo, dinolocal, dinodata, dinocorpo, dinolink', 
 	    array($this, 'create_css_field'), 
 	    'dino-setting-admin-css',
 	    'sessao_aparencia'			
@@ -365,18 +387,28 @@ class wctest{
         </div>
 
         <div>
+            <h3>Local</h3>
+            <textarea style="width:100%; width: 80%; height:30px;" name="dino_plugin_option_css[Local]" id="dinocss4"><?php echo $op["Local"]?></textarea>
+        </div>
+
+        <div>
             <h3>Data</h3>
-            <textarea style="width:100%; width: 80%; height:30px;" name="dino_plugin_option_css[Data]" id="dinocss4"><?php echo $op["Data"]?></textarea>
+            <textarea style="width:100%; width: 80%; height:30px;" name="dino_plugin_option_css[Data]" id="dinocss5"><?php echo $op["Data"]?></textarea>
         </div>
 
         <div>
             <h3>Corpo</h3>
-            <textarea style="width:100%; width: 80%; height:30px;" name="dino_plugin_option_css[Corpo]" id="dinocss5"><?php echo $op["Corpo"]?></textarea>
+            <textarea style="width:100%; width: 80%; height:30px;" name="dino_plugin_option_css[Corpo]" id="dinocss6"><?php echo $op["Corpo"]?></textarea>
         </div>
 
         <div>
             <h3>Link</h3>
-            <textarea style="width:100%; width: 80%; height:30px;" name="dino_plugin_option_css[Link]" id="dinocss6"><?php echo $op["Link"]?></textarea>
+            <textarea style="width:100%; width: 80%; height:30px;" name="dino_plugin_option_css[Link]" id="dinocss7"><?php echo $op["Link"]?></textarea>
+        </div>
+
+        <div>
+            <h3>Arquivos (imagem, video)</h3>
+            <textarea style="width:100%; width: 80%; height:30px;" name="dino_plugin_option_css[Arquivos]" id="dinocss8"><?php echo $op["Arquivos"]?></textarea>
         </div>
     <?php
     }
