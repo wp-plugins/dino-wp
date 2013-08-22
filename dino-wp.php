@@ -161,11 +161,12 @@ if($release == NULL || $releaseid == NULL)
     $posts[0]->post_title = $release->{'Title'};
 
     $cont .= '<div class="dinotitulo"><h1 class="entry-title">'.$release->{'Title'}.'</h1></div>';
-    $cont .= '<div><div id="dresumo"><span class="dinolocal">'.$release->{'Place'}.' </span><span class="dinodata">'.$date->format("d/m/Y").'</span> - <h2 class="dinoresumo ">'.$release->{'Summary'}.'</h2></div>';
+    $cont .= '<div><div><h2 class="dinoresumo "><span class="dinolocal">'.$release->{'Place'}.' </span><span class="dinodata">'.$date->format("d/m/Y").'</span> - '.$release->{'Summary'}.'</h2></div>';
     $cont .= '<div class="dinoarquivos">';
     if($release->{'ImageID'} != NULL)
     {
-        $cont .= '<img itemprop="photo" src="'.$release->{'MainPictureUrl'}.'"/><br/>';
+        $imagem = substr($release->{'MainPictureUrl'}, 0, strpos($release->{'MainPictureUrl'}, "?"))."?quality=60&width=300&height=300";
+        $cont .= '<img itemprop="photo" src="'.$imagem.'"/><br/>';
     }
 
     if($release->{'VideoUrl'} != NULL)
@@ -175,7 +176,7 @@ if($release == NULL || $releaseid == NULL)
 
     $cont .= '</div><p class="dinocorpo entry-content"><br/>'.$release->{'Body'}.'</p>';
     $cont .= '<div class="dinolink"><a href="'.$release->{'SourceUrl'}.'">Leia mais</a></div></div>';
-    $cont .= '<style>.dinotitulo{'.$css["Titulo"].'}.dinoresumo{'.$css["Resumo"].'}.dinolocal{'.$css["Local"].'}.dinodata{'.$css["Data"].'}.dinocorpo{'.$css["Corpo"].'}.dinolink{'.$css["Link"].'}.dinoarquivos{'.$css["Arquivos"].'}#dresumo br{display:none;}'.$css["Livre"].'</style>';
+    $cont .= '<style>.dinotitulo{'.$css["Titulo"].'}.dinolocal{'.$css["Local"].'}.dinodata{'.$css["Data"].'}.dinoresumo{'.$css["Resumo"].'}.dinocorpo{'.$css["Corpo"].'}.dinolink{'.$css["Link"].'}.dinoarquivos{'.$css["Arquivos"].'}'.$css["Livre"].'</style>';
     
 
 
