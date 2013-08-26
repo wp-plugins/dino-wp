@@ -1,0 +1,128 @@
+div#dinoCaixa{
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 14px;
+    line-height: 1.42857;
+}
+
+div#dinoCaixa table{
+    border-spacing: 0;
+}
+
+div#dinoCaixa .restaurar{
+    border: none;
+    background-color: #428bca;
+    color: white;
+    font-size: x-small;
+}
+
+div#dinoCaixa .restaurar:hover{
+    background-color: #21759B;
+}
+
+div#dinoCaixa div#classes ul{
+    color: #8AC007;
+    font-weight: bold;
+}
+
+div#dinoCaixa a{
+    color: #428bca;
+    text-decoration: none;
+}
+    div#dinoCaixa a:focus{
+    outline: thin dotted #333333;
+    outline-offset: -2px;
+    }
+    div#dinoCaixa a:hover, div#dinoCaixa a:focus {
+        color: #2A6496;
+    }
+
+div#dinoCaixa .nav{
+    list-style: none outside none;
+    margin-bottom: 0;
+    padding-left: 0;
+}
+    div#dinoCaixa .nav:before, div#dinoCaixa .nav:after{
+        content: " ";
+        display: table;
+    }
+    div#dinoCaixa .nav:after{
+        clear: both;
+    }
+
+    div#dinoCaixa .nav > li{
+        display: block;
+        position: relative;
+        }
+        div#dinoCaixa .nav > li > a{
+            display: block;
+            position: relative;
+            padding: 10px 15px;
+        }
+            div#dinoCaixa .nav > li > a:hover, div#dinoCaixa .nav > li > a:focus{
+                text-decoration: none;
+                background-color: #eeeeee;
+            }
+
+div#dinoCaixa .nav-tabs{
+    border-bottom: 1px solid #DDDDDD;
+}
+    div#dinoCaixa .nav-tabs > li{
+        float: left;
+        margin-bottom: -1px;
+    }
+        div#dinoCaixa .nav-tabs > li > a{
+            border-radius: 4px 4px 0 0;
+            line-height: 1.42857;
+            margin-right: 2px;
+        }
+        div#dinoCaixa .nav-tabs > li > a:hover{
+            border-color: #eeeeee;
+        }
+            div#dinoCaixa .nav-tabs > li.active > a, div#dinoCaixa .nav-tabs > li.active > a:hover, div#dinoCaixa .nav-tabs > li.active > a:focus{
+                -moz-border-bottom-colors: none;
+                -moz-border-left-colors: none;
+                -moz-border-right-colors: none;
+                -moz-border-top-colors: none;
+        
+                background-color: #ffffff;        
+                border-color: #dddddd #dddddd transparent;
+                border-image: none;
+                border-style: solid;
+                border-width: 1px;
+                color: #555555;
+                cursor: default;
+            }
+
+div#dinoCaixa ul, div#dinoCaixa ol{
+    margin-top: 0;
+}
+
+div#dinoCaixa .tab-content > .active, div#dinoCaixa .pill-content > .active {
+    display: block !important;
+}
+div#dinoCaixa .tab-content > .tab-pane, div#dinoCaixa .pill-content > .pill-pane {
+    display: none;
+}
+
+div#dinoCaixa h3, div#dinoCaixa .h3{
+    font-size: 24px;
+}
+
+div#dinoCaixa h1, div#dinoCaixa h2, div#dinoCaixa h3{
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+div#dinoCaixa h1, div#dinoCaixa h2, div#dinoCaixa h3, div#dinoCaixa h4, div#dinoCaixa h5, div#dinoCaixa h6{
+    display: block;
+}
+
+div#dinoCaixa h1, div#dinoCaixa h2, div#dinoCaixa h3, div#dinoCaixa h4, div#dinoCaixa h5, div#dinoCaixa h6, div#dinoCaixa .h1, div#dinoCaixa .h2, div#dinoCaixa .h3, div#dinoCaixa .h4, div#dinoCaixa .h5, div#dinoCaixa .h6 {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 500;
+    line-height: 1.1;
+}
+
+div#dinoCaixa *{
+    -moz-box-sizing: border-box;
+}

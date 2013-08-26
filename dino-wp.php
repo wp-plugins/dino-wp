@@ -3,7 +3,7 @@
 Plugin Name: DINO WP
 Plugin URI: http://www.dino.com.br
 Description: Ferramenta para visualização de notícias distribuídas pelo DINO - Visibilidade Online.
-Version: 1.0.4
+Version: 1.0.5
 Author: DINO
 Author URI: http://www.dino.com.br
 License: GPL2
@@ -281,10 +281,11 @@ class wctest{
 	    add_action('admin_init', array($this, 'page_init'));
         
         function pw_load_scripts() {
-            wp_enqueue_style( 'bootstrap-css', plugins_url( 'dino-wp/css/bootstrap.min.css' , dirname(__FILE__) ) );
+            wp_enqueue_style( 'dinoadmin-css', plugins_url( 'dino-wp/css/dinoAdmin.css' , dirname(__FILE__) ) );
             
             wp_enqueue_script( 'bootstrap-js', plugins_url( 'dino-wp/js/bootstrap.min.js' , dirname(__FILE__) ) );
             wp_enqueue_script( 'jquery-1102-js', plugins_url( 'dino-wp/js/jquery-1.10.2.min.js' , dirname(__FILE__) ) );
+            wp_enqueue_script( 'dinoadmin-js', plugins_url( 'dino-wp/js/dinoAdmin.js' , dirname(__FILE__) ) );
         }
 
          add_action('admin_enqueue_scripts', 'pw_load_scripts');
@@ -305,15 +306,18 @@ class wctest{
 	        <?php settings_fields('dino_option_group');?>
             <br/>
 
-            <ul class="nav nav-tabs" id="dino-tabs">
-                <li class="active"><a href="#dino-geral" data-toggle="tab">Geral</a></li>
-                <li><a href="#dino-aparencia" data-toggle="tab">Aparência</a></li>
-            </ul>
+            <div id="dinoCaixa">
+                <ul class="nav nav-tabs" id="dino-tabs">
+                    <li class="active"><a href="#dino-geral" data-toggle="tab">Geral</a></li>
+                    <li><a href="#dino-aparencia" data-toggle="tab">Aparência</a></li>
+                </ul>
 
-            <div class="tab-content">
-                <div class="tab-pane active" id="dino-geral"><?php do_settings_sections('dino-setting-admin');?></div>
-                <div class="tab-pane" id="dino-aparencia"><?php do_settings_sections('dino-setting-admin-css');?></div>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="dino-geral"><?php do_settings_sections('dino-setting-admin');?></div>
+                    <div class="tab-pane" id="dino-aparencia"><?php do_settings_sections('dino-setting-admin-css');?></div>
+                </div>
             </div>
+
 	        <?php submit_button(); ?>
 	    </form>
 	</div>
@@ -348,7 +352,7 @@ class wctest{
     	
 	add_settings_field(
 	    'dino_plugin_option_css', 
-	    'Classes: dinotitulo, dinoresumo, dinolocal, dinodata, dinocorpo, dinolink', 
+	    '<div id="classes">Classes<ul><li>.dinotitulo</li><li>.dinoresumo</li><li>.dinolocal</li><li>.dinodata</li><li>.dinocorpo</li><li>.dinolink</li><li>.dinoarquivos</li></ul></div>', 
 	    array($this, 'create_css_field'), 
 	    'dino-setting-admin-css',
 	    'sessao_aparencia'			
@@ -371,46 +375,64 @@ class wctest{
     public function create_css_field(){
         $op = get_option('dino_plugin_option_css');
 
+        $cssLivre = "";
+    $cssTitulo = "display:none;";
+    $cssResumo = "color:#808080; margin-top:5px; display:inline;";
+    $cssLocal = "color:#08c; font-weight:bold;";
+    $cssData = "font-weight:bold;";
+    $cssCorpo = "";
+    $cssLink = "";
+    $cssArquivos = "float:right; margin:3%; width:40%;";
+
     ?>
         <div>
-            <h3>CSS Livre</h3>
+            <h3>CSS Livre <span class="restaurar">[restaurar]</span></h3>
             <textarea style="width:100%; width: 80%; height:100px;" name="dino_plugin_option_css[Livre]" id="dinocss1"><?php echo $op["Livre"] ?></textarea>
+            <input type="hidden" value="<?php echo $cssLivre ?>" class="padrao"/>
         </div>
 
         <div>
-            <h3>Título</h3>
+            <h3>Título <span class="restaurar">[restaurar]</span></h3>
             <textarea style="width:100%; width: 80%; height:30px;" name="dino_plugin_option_css[Titulo]" id="dinocss2"><?php echo $op["Titulo"] ?></textarea>
+            <input type="hidden" value="<?php echo $cssTitulo ?>" class="padrao"/>
         </div>
 
         <div>
-            <h3>Resumo</h3>
+            <h3>Resumo <span class="restaurar"> [restaurar]</span></h3>
             <textarea style="width:100%; width: 80%; height:30px;" name="dino_plugin_option_css[Resumo]" id="dinocss3"><?php echo $op["Resumo"]?></textarea>
+            <input type="hidden" value="<?php echo $cssResumo ?>" class="padrao"/>
         </div>
 
         <div>
-            <h3>Local</h3>
+            <h3>Local <span class="restaurar"> [restaurar]</span></h3>
             <textarea style="width:100%; width: 80%; height:30px;" name="dino_plugin_option_css[Local]" id="dinocss4"><?php echo $op["Local"]?></textarea>
+            <input type="hidden" value="<?php echo $cssLocal ?>" class="padrao"/>
         </div>
 
         <div>
-            <h3>Data</h3>
+            <h3>Data <span class="restaurar"> [restaurar]</span></h3>
             <textarea style="width:100%; width: 80%; height:30px;" name="dino_plugin_option_css[Data]" id="dinocss5"><?php echo $op["Data"]?></textarea>
+            <input type="hidden" value="<?php echo $cssData ?>" class="padrao"/>
         </div>
 
         <div>
-            <h3>Corpo</h3>
+            <h3>Corpo <span class="restaurar"> [restaurar]</span></h3>
             <textarea style="width:100%; width: 80%; height:30px;" name="dino_plugin_option_css[Corpo]" id="dinocss6"><?php echo $op["Corpo"]?></textarea>
+            <input type="hidden" value="<?php echo $cssCorpo ?>" class="padrao"/>
         </div>
 
         <div>
-            <h3>Link</h3>
+            <h3>Link <span class="restaurar"> [restaurar]</span></h3>
             <textarea style="width:100%; width: 80%; height:30px;" name="dino_plugin_option_css[Link]" id="dinocss7"><?php echo $op["Link"]?></textarea>
+            <input type="hidden" value="<?php echo $cssLink ?>" class="padrao"/>
         </div>
 
         <div>
-            <h3>Arquivos (imagem, video)</h3>
+            <h3>Arquivos (imagem, video) <span class="restaurar"> [restaurar]</span></h3>
             <textarea style="width:100%; width: 80%; height:30px;" name="dino_plugin_option_css[Arquivos]" id="dinocss8"><?php echo $op["Arquivos"]?></textarea>
+            <input type="hidden" value="<?php echo $cssArquivos ?>" class="padrao"/>
         </div>
+
     <?php
     }
 
