@@ -3,11 +3,22 @@
 Plugin Name: DINO WP
 Plugin URI: http://www.dino.com.br
 Description: Ferramenta para visualização de notícias distribuídas pelo DINO - Visibilidade Online.
-Version: 1.0.6
+Version: 1.0.7
 Author: DINO
 Author URI: http://www.dino.com.br
 License: GPL2
 */
+
+function dino_file_get_contents( $site_url ){
+	$ch = curl_init();
+	$timeout = 10;
+	curl_setopt ($ch, CURLOPT_URL, $site_url);
+	curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+	$file_contents = curl_exec($ch);
+	curl_close($ch);
+	return $file_contents;
+}
 
 register_activation_hook(__FILE__,'dino_plugin_install'); 
 
@@ -137,7 +148,7 @@ $releaseid = $_GET["releaseid"];
 
 $url = "http://www.dino.com.br/api/news/".$releaseid;
 
-$json = file_get_contents($url);
+$json = dino_file_get_contents($url);
 
 $release = json_decode($json);
 
@@ -149,7 +160,7 @@ $html = $opti["Html"];
 
 $cont = '<div>'.$html.'</div>';
 
-if($release == NULL || $releaseid == NULL)
+if($release->{'Title'} == NULL || $releaseid == NULL)
 {
     $posts[0]->post_title = "Notícia não localizada";
 
@@ -197,7 +208,7 @@ if(!function_exists("page_meta"))
     function page_meta(){
         $releaseid2 = $_GET["releaseid"];
         $url2 = "http://www.dino.com.br/api/news/".$releaseid2;
-        $json2 = file_get_contents($url2);
+        $json2 = dino_file_get_contents($url2);
         $release2 = json_decode($json2);
 
         $summary = encurtador( $release2->{'Summary'}, 160 );
