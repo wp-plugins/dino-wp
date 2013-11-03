@@ -3,7 +3,7 @@
 Plugin Name: DINO WP
 Plugin URI: http://www.dino.com.br
 Description: Ferramenta para visualização de notícias distribuídas pelo DINO - Visibilidade Online.
-Version: 1.0.7
+Version: 1.0.8
 Author: DINO
 Author URI: http://www.dino.com.br
 License: GPL2
@@ -42,6 +42,10 @@ function dino_plugin_install() {
     $the_page_title = "newsdino";
     $the_page_name = 'DINO';
 
+    $the_pageList_title = "newsdinolist";
+    $the_pageList_name = "DINOLIST";
+
+
     $cssLivre = "";
     $cssTitulo = "display:none;";
     $cssResumo = "color:#808080; margin-top:5px; display:inline;";
@@ -54,9 +58,13 @@ function dino_plugin_install() {
     $widgetH = 550;
     $widgetW = 250;
 
+    $listH = 900;
+    $listW = 670;
+
     $optionsCss = array("Livre" => $cssLivre, "Titulo" => $cssTitulo, "Resumo" => $cssResumo, "Local" => $cssLocal, "Data" => $cssData, "Corpo" => $cssCorpo, "Link" => $cssLink, "Arquivos" => $cssArquivos);
     $options = array("Parceiro" => "", "Html" => "");
     $optionsWidget = array("Height" => $widgetH, "Width" => $widgetW);
+    $optionsList = array("Height" => $listH, "Width" => $listW);
 
     delete_option("dino_plugin_page_title");
     add_option("dino_plugin_page_title", $the_page_title, '', 'yes');
@@ -75,6 +83,22 @@ function dino_plugin_install() {
 
     delete_option("dino_plugin_widget");
     add_option("dino_plugin_widget", $optionsWidget, '', 'yes');
+
+    //**************************************************************Lista
+    
+    delete_option("dino_plugin_pageList_title");
+    add_option("dino_plugin_pageList_title", $the_pageList_title, '', 'yes');
+
+    delete_option("dino_plugin_pageList_name");
+    add_option("dino_plugin_pageList_name", $the_pageList_name, '', 'yes');
+
+    delete_option("dino_plugin_pageList_id");
+    add_option("dino_plugin_pageList_id", '0', '', 'yes');
+
+    delete_option("dino_plugin_list");
+    add_option("dino_plugin_list", $optionsList, '', 'yes');
+
+    //*****************************************************
 
     $the_page = get_page_by_title( $the_page_title);
 
@@ -109,6 +133,42 @@ function dino_plugin_install() {
 
     delete_option( 'dino_plugin_page_id' );
     add_option( 'dino_plugin_page_id', $the_page_id );
+
+    //**********************************************************************Lista
+    
+        $the_pageList = get_page_by_title( $the_pageList_title);
+
+    if ( ! $the_pageList ) {
+
+        $_pl = array();
+        $_pl['post_title'] = $the_pageList_title;
+        $_pl['post_content'] = "DINO - Divulgador e Visibilidade Online. Lista* - NÃO DELETE.";
+        $_pl['post_status'] = 'private';//'publish';
+        $_pl['post_type'] = 'page';
+        $_pl['comment_status'] = 'closed';
+        $_pl['ping_status'] = 'closed';
+        $_pl['post_category'] = array(1); // the default 'Uncatrgorised'
+        $_pl['post_name'] = $pageList_name;
+
+        $the_pageList_id = wp_insert_post( $_pl );
+
+    }
+    else {
+
+        $the_pageList_id = $the_page->ID;
+
+        $the_pageList->post_status = 'private';//'publish';
+        $the_pageList->comment_status = 'closed';
+        $the_pageList->ping_status = 'closed';
+        $the_pageList->post_type = 'page';
+        $the_pageList->post_content = "DINO - Divulgador e Visibilidade Online. Lista* - NÃO DELETE.";
+        $the_pageList->post_name = $pageList_name;
+        $the_pageList_id = wp_update_post( $the_pageList );
+
+    }
+
+    delete_option( 'dino_plugin_pageList_id' );
+    add_option( 'dino_plugin_pageList_id', $the_pageList_id );
 }
 
 function dino_plugin_remove() {
@@ -123,13 +183,29 @@ function dino_plugin_remove() {
         wp_delete_post( $the_page_id ); // this will trash, not delete
 
     }
+    //*******************************************************************Lista
+    
+    $the_pageList_title = get_option( "dino_plugin_pageList_title" );
+    $the_pageList_name = get_option( "dino_plugin_pageList_name" );
+    $the_pageList_id = get_option( 'dino_plugin_pageList_id' );
+    if( $the_pageList_id ) {
+
+        wp_delete_post( $the_pageList_id ); // this will trash, not delete
+
+    }
 
     delete_option("dino_plugin_page_title");
     delete_option("dino_plugin_page_name");
     delete_option("dino_plugin_page_id");
+
+    delete_option("dino_plugin_pageList_title");
+    delete_option("dino_plugin_pageList_name");
+    delete_option("dino_plugin_pageList_id");
+
     delete_option("dino_plugin_option");
     delete_option("dino_plugin_option_css");
     delete_option("dino_plugin_widget");
+    delete_option("dino_plugin_list");
 
 }
 
@@ -226,6 +302,31 @@ if(!function_exists("page_meta"))
 }
 }
 
+if( $wp_query->get('dino_plugin_list_is_called') ) {
+
+$list_options = get_option('dino_plugin_list');
+$dino_options = get_option('dino_plugin_option');
+$list_h = $list_options["Height"];
+$list_w = $list_options["Width"];
+$parceiro_id = $dino_options["Parceiro"];
+
+if($list_h == NULL || $list_h == 0)
+{
+    $list_h = 900;
+}
+
+if($list_w == NULL || $list_w == 0)
+{
+    $list_w = 670;
+}
+
+$posts[0]->post_title = "Releases DINO";
+$posts[0]->post_content = "<div style='width:".$list_w."px;'><script type='text/javascript'>var _dinopartId = new Array();_dinopartId.push('".$parceiro_id."'); var widgetHeight='".$list_h."px';</script><br /><script type='text/javascript' src='http://www.dino.com.br/embed/pagedlist.js'></script></div>";
+
+return $posts;
+
+}
+
 return $posts;
 
 }
@@ -235,8 +336,12 @@ function dino_plugin_query_parser( $q ) {
 
 $pp = get_page_by_title(get_option( 'dino_plugin_page_title' ));
 $the_page_name = $pp->post_name;
-
 $the_page_id = get_option( 'dino_plugin_page_id' );
+
+$ppl = get_page_by_title(get_option( 'dino_plugin_pageList_title' ));
+$the_pageList_name = $ppl->post_name;
+$the_pageList_id = get_option( 'dino_plugin_pageList_id' );
+
 $qv = $q->query_vars;
 
 if( !$q->did_permalink AND ( isset( $q->query_vars['page_id'] ) ) AND ( intval($q->query_vars['page_id']) == $the_page_id ) ) {
@@ -250,12 +355,24 @@ elseif( isset( $q->query_vars['pagename'] ) AND ( ($q->query_vars['pagename'] ==
 $q->set('dino_plugin_page_is_called', TRUE );
 return $q;
 
-}else {
+}elseif( !$q->did_permalink AND ( isset( $q->query_vars['page_id'] ) ) AND ( intval($q->query_vars['page_id']) == $the_pageList_id ) ) {
 
 $q->set('dino_plugin_page_is_called', FALSE );
+$q->set('dino_plugin_list_is_called', TRUE );
+return $q;
+
+}elseif( isset( $q->query_vars['pagename'] ) AND ( ($q->query_vars['pagename'] == $the_pageList_name) OR ($_pos_found = strpos($q->query_vars['pagename'],$the_pageList_name.'/') === 0) ) ) {
+
+$q->set('dino_plugin_list_is_called', TRUE );
+return $q;
+
+}else {
+
+$q->set('dino_plugin_list_is_called', FALSE );
 return $q;
 
 }
+
 
 }
 
@@ -267,6 +384,7 @@ add_action( 'admin_init', 'register_dinosettings' );
 function register_dinosettings() {
 	register_setting( 'dino_settings_group', 'dino_plugin_option' );
     register_setting( 'dino_settings_group', 'dino_plugin_option_css' );
+    register_setting( 'dino_settings_group', 'dino_plugin_list' );
 }
 
 function encurtador($texto, $tamanho){
@@ -280,6 +398,14 @@ function encurtador($texto, $tamanho){
 function dinopagelink(){
     global $wpdb;
     $pageid = get_option('dino_plugin_page_id');
+    $actual_link = "http://$_SERVER[HTTP_HOST]?page_id=$pageid";
+    return $actual_link;
+}
+
+function dinopagelistLink()
+{
+    global $wpdb;
+    $pageid = get_option('dino_plugin_pageList_id');
     $actual_link = "http://$_SERVER[HTTP_HOST]?page_id=$pageid";
     return $actual_link;
 }
@@ -324,11 +450,13 @@ class wctest{
                 <ul class="nav nav-tabs" id="dino-tabs">
                     <li class="active"><a href="#dino-geral" data-toggle="tab">Geral</a></li>
                     <li><a href="#dino-aparencia" data-toggle="tab">Aparência</a></li>
+                    <li><a href="#dino-lista" data-toggle="tab">Listagem</a></li>
                 </ul>
 
                 <div class="tab-content">
                     <div class="tab-pane active" id="dino-geral"><?php do_settings_sections('dino-setting-admin');?></div>
                     <div class="tab-pane" id="dino-aparencia"><?php do_settings_sections('dino-setting-admin-css');?></div>
+                    <div class="tab-pane" id="dino-lista"><?php do_settings_sections('dino-setting-admin-list');?></div>
                 </div>
             </div>
 
@@ -341,6 +469,7 @@ class wctest{
     public function page_init(){		
 	register_setting('dino_option_group', 'dino_plugin_option');
     register_setting('dino_option_group', 'dino_plugin_option_css');
+    register_setting('dino_option_group', 'dino_plugin_list');
 		
     add_settings_section(
 	    'sessao_info',
@@ -371,11 +500,30 @@ class wctest{
 	    'dino-setting-admin-css',
 	    'sessao_aparencia'			
 	);
+
+    add_settings_section(
+	    'sessao_lista',
+	    'Listagem',
+	    array($this, 'print_section_lista'),
+	    'dino-setting-admin-list'
+	);
+    
+        add_settings_field(
+	        'dino_plugin_list', 
+	        '', 
+	        array($this, 'create_list_field'), 
+	        'dino-setting-admin-list',
+	        'sessao_lista'			
+	    );
     	
     }
 	
     public function print_section_aparencia(){
 	print 'CSS:';
+    }
+
+    public function print_section_lista(){
+	print 'Listagem:';
     }
 
     public function print_section_info(){
@@ -468,6 +616,29 @@ class wctest{
         <div>
             <h3>Html</h3>
             <textarea style="min-width:300px; width: 80%; height:50px;" name="dino_plugin_option[Html]" id="dinooption2"><?php echo $op_info["Html"]?></textarea>
+        </div>
+    <?php
+    }
+
+    public function create_list_field(){
+        $op_info = get_option('dino_plugin_list');
+        $pagelink = dinopagelistLink();
+    ?>
+        <div>
+            <h3>Página da Listagem</h3>
+            <a href="<?php echo $pagelink ?>"><?php echo $pagelink ?></a>
+        </div>
+
+        <div>
+            <h3>Altura da Lista</h3>
+            <input type="text" name="dino_plugin_list[Height]" id="dinolist1" value="<?php echo $op_info["Height"]?>" />
+            
+        </div>
+        
+        <div>
+            <h3>Largura da Lista</h3>
+            <input type="text" name="dino_plugin_list[Width]" id="dinolist2" value="<?php echo $op_info["Width"]?>" />
+            
         </div>
     <?php
     }
