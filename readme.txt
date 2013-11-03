@@ -3,7 +3,7 @@ Contributors: dinoon
 Donate link: 
 Tags: news, release, DINO, Brasil
 Requires at least: 3.5.1
-Tested up to: 3.6.1
+Tested up to: 3.7.1
 Stable tag: 1.0.8
 
 Ferramenta para vizualização de notícias distribuídas pelo DINO - Visibilidade Online.

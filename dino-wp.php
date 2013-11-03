@@ -55,13 +55,15 @@ function dino_plugin_install() {
     $cssLink = "";
     $cssArquivos = "float:right; margin:3%; width:40%;";
 
+    $mostrarLink = "";
+
     $widgetH = 550;
     $widgetW = 250;
 
     $listH = 900;
     $listW = 670;
 
-    $optionsCss = array("Livre" => $cssLivre, "Titulo" => $cssTitulo, "Resumo" => $cssResumo, "Local" => $cssLocal, "Data" => $cssData, "Corpo" => $cssCorpo, "Link" => $cssLink, "Arquivos" => $cssArquivos);
+    $optionsCss = array("Livre" => $cssLivre, "Titulo" => $cssTitulo, "Resumo" => $cssResumo, "Local" => $cssLocal, "Data" => $cssData, "Corpo" => $cssCorpo, "Link" => $cssLink, "MostrarLink" => $mostrarLink, "Arquivos" => $cssArquivos);
     $options = array("Parceiro" => "", "Html" => "");
     $optionsWidget = array("Height" => $widgetH, "Width" => $widgetW);
     $optionsList = array("Height" => $listH, "Width" => $listW);
@@ -262,7 +264,10 @@ if($release->{'Title'} == NULL || $releaseid == NULL)
     }
 
     $cont .= '</div><p class="dinocorpo entry-content"><br/>'.$release->{'Body'}.'</p>';
-    $cont .= '<div class="dinolink"><a href="'.$release->{'SourceUrl'}.'">Leia mais</a></div></div>';
+    if($css["MostrarLink"] == "on")
+    {
+        $cont .= '<div class="dinolink"><a href="'.$release->{'SourceUrl'}.'">Leia mais</a></div></div>';
+    }
     $cont .= '<style>.dinotitulo{'.$css["Titulo"].'}.dinolocal{'.$css["Local"].'}.dinodata{'.$css["Data"].'}.dinoresumo{'.$css["Resumo"].'}.dinocorpo{'.$css["Corpo"].'}.dinolink{'.$css["Link"].'}.dinoarquivos{'.$css["Arquivos"].'}'.$css["Livre"].'</style>';
     
 
@@ -587,6 +592,8 @@ class wctest{
             <h3>Link <span class="restaurar"> [restaurar]</span></h3>
             <textarea style="width:100%; width: 80%; height:30px;" name="dino_plugin_option_css[Link]" id="dinocss7"><?php echo $op["Link"]?></textarea>
             <input type="hidden" value="<?php echo $cssLink ?>" class="padrao"/>
+            <br/>
+            <label>Mostrar Link <input type="checkbox" name="dino_plugin_option_css[MostrarLink]" <?php checked( $op["MostrarLink"] == 'on',true); ?> /></label>
         </div>
 
         <div>
