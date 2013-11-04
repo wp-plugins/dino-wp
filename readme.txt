@@ -39,6 +39,10 @@ A instalação do plugin é bastante simples.
 =
 
 == Changelog ==
+= 1.0.9 =
+* 2013-11-04
+* Correção de bug na tela de exibição do release.
+
 = 1.0.8 =
 * 2013-11-03
 * Adicionada lista de releases e configuração no Administrador.
