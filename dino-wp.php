@@ -254,7 +254,7 @@ if($release->{'Title'} == NULL || $releaseid == NULL)
     $cont .= '<div class="dinoarquivos">';
     if($release->{'ImageID'} != NULL)
     {
-        $imagem = substr($release->{'MainPictureUrl'}, 0, strpos($release->{'MainPictureUrl'}, "?"))."?quality=60&width=300&height=300";
+        $imagem = substr($release->{'MainPictureUrl'}, 0, strpos($release->{'MainPictureUrl'}, "?"));
         $cont .= '<img itemprop="photo" src="'.$imagem.'"/><br/>';
     }
 
