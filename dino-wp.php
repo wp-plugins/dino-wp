@@ -3,7 +3,7 @@
 Plugin Name: DINO WP
 Plugin URI: http://www.dino.com.br
 Description: Ferramenta para visualização de notícias distribuídas pelo DINO - Visibilidade Online.
-Version: 1.0.8
+Version: 1.0.9
 Author: DINO
 Author URI: http://www.dino.com.br
 License: GPL2
@@ -264,11 +264,13 @@ if($release->{'Title'} == NULL || $releaseid == NULL)
     }
 
     $cont .= '</div><p class="dinocorpo entry-content"><br/>'.$release->{'Body'}.'</p>';
+
     if($css["MostrarLink"] == "on")
     {
-        $cont .= '<div class="dinolink"><a href="'.$release->{'SourceUrl'}.'">Leia mais</a></div></div>';
+        $cont .= '<div class="dinolink"><a href="'.$release->{'SourceUrl'}.'">Leia mais</a></div>';
     }
-    $cont .= '<style>.dinotitulo{'.$css["Titulo"].'}.dinolocal{'.$css["Local"].'}.dinodata{'.$css["Data"].'}.dinoresumo{'.$css["Resumo"].'}.dinocorpo{'.$css["Corpo"].'}.dinolink{'.$css["Link"].'}.dinoarquivos{'.$css["Arquivos"].'}'.$css["Livre"].'</style>';
+
+    $cont .= '</div><style>.dinotitulo{'.$css["Titulo"].'}.dinolocal{'.$css["Local"].'}.dinodata{'.$css["Data"].'}.dinoresumo{'.$css["Resumo"].'}.dinocorpo{'.$css["Corpo"].'}.dinolink{'.$css["Link"].'}.dinoarquivos{'.$css["Arquivos"].'}'.$css["Livre"].'</style>';
     
 
 
@@ -299,6 +301,11 @@ if(!function_exists("page_meta"))
         $metaContent .= '<meta property="og:title" content="'."$title".'" />';
         $metaContent .= '<meta  property="og:description" content="'."$summary".'" />';
 
+        if($release2->{'ImageID'} != NULL)
+        {
+            $image = substr($release2->{'MainPictureUrl'}, 0, strpos($release2->{'MainPictureUrl'}, "?"))."?quality=60&width=300&height=300";
+            $metaContent .= '<meta  property="og:image" content="'."$image".'" />';   
+        }
 
         return print($metaContent);
     }
