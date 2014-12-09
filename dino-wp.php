@@ -3,18 +3,18 @@
 Plugin Name: DINO WP
 Plugin URI: http://www.dino.com.br
 Description: Ferramenta para visualização de notícias distribuídas pelo DINO - Visibilidade Online.
-Version: 1.0.9
+Version: 1.0.10
 Author: DINO
 Author URI: http://www.dino.com.br
 License: GPL2
 */
-
 function dino_file_get_contents( $site_url ){
 	$ch = curl_init();
 	$timeout = 10;
 	curl_setopt ($ch, CURLOPT_URL, $site_url);
 	curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Accept: application/json'));
 	$file_contents = curl_exec($ch);
 	curl_close($ch);
 	return $file_contents;
