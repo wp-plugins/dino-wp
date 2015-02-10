@@ -3,7 +3,7 @@
 Plugin Name: DINO WP
 Plugin URI: http://www.dino.com.br
 Description: Ferramenta para visualização de notícias distribuídas pelo DINO - Visibilidade Online.
-Version: 1.0.11
+Version: 1.0.12
 Author: DINO
 Author URI: http://www.dino.com.br
 License: GPL2
@@ -271,14 +271,27 @@ $cont = '<div>'.$html.'</div>';
 
 if($release->{'Title'} == NULL || $releaseid == NULL)
 {
-    $posts[0]->post_title = "Notícia não localizada";
+    try
+    {
+        $posts[0]->post_title = "Notícia não localizada";
+    }catch (Exception $e) {
+            //echo $e->getMessage();
+        }
+    
 
     $cont .= '<div class="entry-content"><p>Notícia não encontrada, verifique o endereço digitado.</p></div>';
 
     $posts[0]->post_content = $cont;
 }else
 {
-    $posts[0]->post_title = $release->{'Title'};
+    try
+    {
+        $posts[0]->post_title = $release->{'Title'};
+    }
+        catch (Exception $e) {
+            //echo $e->getMessage();
+        }
+    
 
     $cont .= '<div class="dinotitulo"><h1 class="entry-title">'.$release->{'Title'}.'</h1></div>';
     $cont .= '<div><div><h2 class="dinoresumo "><span class="dinolocal">'.$release->{'Place'}.' </span><span class="dinodata">'.$date->format("d/m/Y").'</span> - '.$release->{'Summary'}.'</h2></div>';
