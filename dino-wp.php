@@ -3,7 +3,7 @@
 Plugin Name: DINO WP
 Plugin URI: http://www.dino.com.br
 Description: Ferramenta para visualização de notícias distribuídas pelo DINO - Visibilidade Online.
-Version: 1.0.12
+Version: 1.0.13
 Author: DINO
 Author URI: http://www.dino.com.br
 License: GPL2
@@ -376,7 +376,15 @@ if($list_w == NULL || $list_w == 0)
     $list_w = 670;
 }
 
-$posts[0]->post_title = "Releases DINO";
+    try
+    {
+        $posts[0]->post_title = "Releases DINO";
+    }
+        catch (Exception $e) {
+            //echo $e->getMessage();
+        }
+
+
 $posts[0]->post_content = "<div style='width:".$list_w."px;'><script type='text/javascript'>var _dinopartId = new Array();_dinopartId.push('".$parceiro_id."'); var widgetHeight='".$list_h."px';</script><br /><script type='text/javascript' src='http://www.dino.com.br/embed/pagedlist.js'></script></div>";
 
 return $posts;
