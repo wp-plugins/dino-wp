@@ -3,71 +3,70 @@
 Plugin Name: DINO WP
 Plugin URI: http://www.dino.com.br
 Description: Ferramenta para visualização de notícias distribuídas pelo DINO - Visibilidade Online.
-Version: 1.0.13
+Version: 1.0.14
 Author: DINO
 Author URI: http://www.dino.com.br
 License: GPL2
 */
-function _isCurl(){
+
+function _isCurl()
+{
     return function_exists('curl_version');
 }
 
-function dino_file_get_contents( $site_url ){
-
-    if(_isCurl())
-    {
-        try {
+function dino_file_get_contents( $site_url )
+{
+    if (_isCurl()) {
+        try
+        {
             $ch = curl_init();
             $timeout = 10;
-            curl_setopt ($ch, CURLOPT_URL, $site_url);
-            curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+            curl_setopt($ch, CURLOPT_URL, $site_url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Accept: application/json'));
             curl_setopt($ch, CURLOPT_USERAGENT, 'DinoNews');
             $file_contents = curl_exec($ch);
 
-            if ($file_contents === FALSE) {
+            if ($file_contents === false) {
                 echo "cURL Error: " . curl_error($ch);
             }
-        
+            
             curl_close($ch);
             return $file_contents;
-
         }
-        catch (Exception $e) {
+        catch (Exception $e)
+        {
             echo $e->getMessage();
         }
-        
-    }else
-    {
-         try{
-             return file_get_contents($site_url);
-         }
-         catch (Exception $e) {
+    } else {
+        try
+        {
+            return file_get_contents($site_url);
+        }
+        catch (Exception $e)
+        {
             echo $e->getMessage();
-         }        
-    }    
-
-    return NULL;
+        }        
+    }
+    return null;
 }
 
-register_activation_hook(__FILE__,'dino_plugin_install'); 
+register_activation_hook(__FILE__, 'dino_plugin_install'); 
 
-register_deactivation_hook( __FILE__, 'dino_plugin_remove' );
+register_deactivation_hook(__FILE__, 'dino_plugin_remove');
 
-add_filter( 'the_posts', 'dino_plugin_page_filter' );
+add_filter('the_posts', 'dino_plugin_page_filter');
 
-add_filter( 'parse_query', 'dino_plugin_query_parser' );
+add_filter('parse_query', 'dino_plugin_query_parser');
 
-if ( is_admin() ){
-
-$wctest = new wctest();
+if (is_admin()) {
+    $wctest = new wctest();
 }
 
 //Functions
 
 function dino_plugin_install() {
-
     global $wpdb;
 
     $the_page_title = "newsdino";
@@ -75,7 +74,6 @@ function dino_plugin_install() {
 
     $the_pageList_title = "newsdinolist";
     $the_pageList_name = "DINOLIST";
-
 
     $cssLivre = "";
     $cssTitulo = "display:none;";
@@ -86,7 +84,7 @@ function dino_plugin_install() {
     $cssLink = "";
     $cssArquivos = "float:right; margin:3%; width:40%;";
 
-    $mostrarLink = "";
+    $mostrarLink = "no";
 
     $widgetH = 550;
     $widgetW = 250;
@@ -133,9 +131,9 @@ function dino_plugin_install() {
 
     //*****************************************************
 
-    $the_page = get_page_by_title( $the_page_title);
+    $the_page = get_page_by_title($the_page_title);
 
-    if ( ! $the_page ) {
+    if (!$the_page ) {
 
         $_p = array();
         $_p['post_title'] = $the_page_title;
@@ -147,10 +145,8 @@ function dino_plugin_install() {
         $_p['post_category'] = array(1); // the default 'Uncatrgorised'
         $_p['post_name'] = $page_name;
 
-        $the_page_id = wp_insert_post( $_p );
-
-    }
-    else {
+        $the_page_id = wp_insert_post($_p);
+    } else {
 
         $the_page_id = $the_page->ID;
 
@@ -164,15 +160,14 @@ function dino_plugin_install() {
 
     }
 
-    delete_option( 'dino_plugin_page_id' );
-    add_option( 'dino_plugin_page_id', $the_page_id );
+    delete_option('dino_plugin_page_id');
+    add_option('dino_plugin_page_id', $the_page_id);
 
     //**********************************************************************Lista
-    
-        $the_pageList = get_page_by_title( $the_pageList_title);
 
-    if ( ! $the_pageList ) {
+    $the_pageList = get_page_by_title($the_pageList_title);
 
+    if (!$the_pageList) {
         $_pl = array();
         $_pl['post_title'] = $the_pageList_title;
         $_pl['post_content'] = "DINO - Divulgador e Visibilidade Online. Lista* - NÃO DELETE.";
@@ -183,11 +178,8 @@ function dino_plugin_install() {
         $_pl['post_category'] = array(1); // the default 'Uncatrgorised'
         $_pl['post_name'] = $pageList_name;
 
-        $the_pageList_id = wp_insert_post( $_pl );
-
-    }
-    else {
-
+        $the_pageList_id = wp_insert_post($_pl);
+    } else {
         $the_pageList_id = $the_page->ID;
 
         $the_pageList->post_status = 'private';//'publish';
@@ -196,35 +188,30 @@ function dino_plugin_install() {
         $the_pageList->post_type = 'page';
         $the_pageList->post_content = "DINO - Divulgador e Visibilidade Online. Lista* - NÃO DELETE.";
         $the_pageList->post_name = $pageList_name;
-        $the_pageList_id = wp_update_post( $the_pageList );
-
+        $the_pageList_id = wp_update_post($the_pageList);
     }
 
-    delete_option( 'dino_plugin_pageList_id' );
-    add_option( 'dino_plugin_pageList_id', $the_pageList_id );
+    delete_option('dino_plugin_pageList_id');
+    add_option('dino_plugin_pageList_id', $the_pageList_id);
 }
 
 function dino_plugin_remove() {
-
     global $wpdb;
 
-    $the_page_title = get_option( "dino_plugin_page_title" );
-    $the_page_name = get_option( "dino_plugin_page_name" );
-    $the_page_id = get_option( 'dino_plugin_page_id' );
-    if( $the_page_id ) {
-
-        wp_delete_post( $the_page_id ); // this will trash, not delete
-
+    $the_page_title = get_option("dino_plugin_page_title");
+    $the_page_name = get_option("dino_plugin_page_name");
+    $the_page_id = get_option('dino_plugin_page_id');
+    if ($the_page_id) {
+        wp_delete_post($the_page_id); // this will trash, not delete
     }
+
     //*******************************************************************Lista
     
-    $the_pageList_title = get_option( "dino_plugin_pageList_title" );
-    $the_pageList_name = get_option( "dino_plugin_pageList_name" );
-    $the_pageList_id = get_option( 'dino_plugin_pageList_id' );
-    if( $the_pageList_id ) {
-
-        wp_delete_post( $the_pageList_id ); // this will trash, not delete
-
+    $the_pageList_title = get_option("dino_plugin_pageList_title");
+    $the_pageList_name = get_option("dino_plugin_pageList_name");
+    $the_pageList_id = get_option('dino_plugin_pageList_id');
+    if ($the_pageList_id) {
+        wp_delete_post($the_pageList_id); // this will trash, not delete
     }
 
     delete_option("dino_plugin_page_title");
@@ -239,210 +226,151 @@ function dino_plugin_remove() {
     delete_option("dino_plugin_option_css");
     delete_option("dino_plugin_widget");
     delete_option("dino_plugin_list");
-
 }
 
-function dino_plugin_page_filter( $posts ) {
+function dino_plugin_page_filter($posts) {
+    global $wp_query;
+    global $_GET;
 
-global $wp_query;
-
-global $_GET;
-
-if(!is_null($wp_query))
-{
-
-if( $wp_query->get('dino_plugin_page_is_called') ) {
-
-$releaseid = $_GET["releaseid"];
-
-$url = "http://www.dino.com.br/api/news/".$releaseid;
-
-$json = dino_file_get_contents($url);
-
-$release = json_decode($json);
-
-$date = new DateTime($release->{'PublishedDate'});
-
-$css = get_option('dino_plugin_option_css');
-$opti = get_option('dino_plugin_option');
-$html = $opti["Html"];
-
-$cont = '<div>'.$html.'</div>';
-
-if($release->{'Title'} == NULL || $releaseid == NULL)
-{
-    try
-    {
-        $posts[0]->post_title = "Notícia não localizada";
-    }catch (Exception $e) {
-            //echo $e->getMessage();
-        }
+    $posts[0] = new stdClass();
     
+    if (!is_null($wp_query)) {
+        if ($wp_query->get('dino_plugin_page_is_called')) {
+            $releaseid = $_GET["releaseid"];
+            $url = "http://www.dino.com.br/api/news/".$releaseid;
+            $json = dino_file_get_contents($url);
+            $release = json_decode($json);
+            $date = new DateTime($release->{'PublishedDate'});
+            $css = get_option('dino_plugin_option_css');
+            $opti = get_option('dino_plugin_option');
+            $html = $opti["Html"];
+            $cont = '<div>'.$html.'</div>';
+            
+            if ($release->{'Title'} == null || $releaseid == null) {
+                $posts[0]->post_title = "Notícia não localizada";
+                
+                $cont .= '<div class="entry-content"><p>Notícia não encontrada, verifique o endereço digitado.</p></div>';
+                $posts[0]->post_content = $cont;
+            } else {
+                $posts[0]->post_title = $release->{'Title'};
+                
+                $cont .= '<div class="dinotitulo"><h1 class="entry-title">'.$release->{'Title'}.'</h1></div>';
+                $cont .= '<div><div><h2 class="dinoresumo "><span class="dinolocal">'.$release->{'Place'}.' </span><span class="dinodata">'.$date->format("d/m/Y").'</span> - '.$release->{'Summary'}.'</h2></div>';
+                $cont .= '<div class="dinoarquivos">';
+                
+                if ($release->{'MainPictureUrl'} != null) {
+                    $imagem = substr($release->{'MainPictureUrl'}, 0, strpos($release->{'MainPictureUrl'}, "?"));
+                    $cont .= '<img itemprop="photo" src="'.$imagem.'"/><br/>';
+                }
+                
+                if ($release->{'VideoUrl'} != null) {
+                    $cont .= '<br/><iframe src="'.$release->{'VideoUrl'}.'?rel=0" frameborder="0" allowfullscreen></iframe>';
+                }
+                
+                $cont .= '</div><p class="dinocorpo entry-content"><br/>'.$release->{'Body'}.'</p>';
 
-    $cont .= '<div class="entry-content"><p>Notícia não encontrada, verifique o endereço digitado.</p></div>';
-
-    $posts[0]->post_content = $cont;
-}else
-{
-    try
-    {
-        $posts[0]->post_title = $release->{'Title'};
-    }
-        catch (Exception $e) {
-            //echo $e->getMessage();
+                if ($css["MostrarLink"] == "on") {
+                    $cont .= '<div class="dinolink"><a href="'.$release->{'SourceUrl'}.'">Leia mais</a></div>';
+                }
+                
+                $cont .= '</div><style>.dinotitulo{'.$css["Titulo"].'}.dinolocal{'.$css["Local"].'}.dinodata{'.$css["Data"].'}.dinoresumo{'.$css["Resumo"].'}.dinocorpo{'.$css["Corpo"].'}.dinolink{'.$css["Link"].'}.dinoarquivos{'.$css["Arquivos"].'}'.$css["Livre"].'</style>';
+                
+                $analytics =  '<script type="text/javascript" title="Analytics">';
+                $analytics .= "var _gaq = _gaq || [];_gaq.push(['_setAccount', 'UA-28239442-1']);";
+                $analytics .= "_gaq.push(['_setCustomVar', 1, 'partner', '".$opti["Parceiro"]."', 3]);_gaq.push(['_setCustomVar', 2, 'release', '".$releaseid."', 3]);_gaq.push(['_trackPageview']);";
+                $analytics .= "(function () {var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);})();</script>";
+                
+                $ti = get_bloginfo();
+                $script = '<script type="text/javascript" title="Titulo">var titulo = "'.$release->{'Title'}." | ".$ti.'"; if (document.title.search("newsdino") !== -1){ document.title = titulo; } </script>';
+                $posts[0]->post_content = $cont.$analytics.$script;
+                $hook = add_action("wp_head", "page_meta");
+                
+                if (!function_exists("page_meta")) {
+                    function page_meta() {
+                        $releaseid2 = $_GET["releaseid"];
+                        $url2 = "http://www.dino.com.br/api/news/".$releaseid2;
+                        $json2 = dino_file_get_contents($url2);
+                        $release2 = json_decode($json2);
+                        
+                        $summary = encurtador($release2->{'Summary'}, 160);
+                        $title = encurtador($release2->{'Title'}, 170);
+                        
+                        $metaContent = '<meta name="description" content="'."$summary".'" />';
+                        $metaContent .= '<meta property="og:title" content="'."$title".'" />';
+                        $metaContent .= '<meta  property="og:description" content="'."$summary".'" />';
+                        
+                        if ($release2->{'MainPictureUrl'} != null) {
+                            $image = substr($release2->{'MainPictureUrl'}, 0, strpos($release2->{'MainPictureUrl'}, "?"))."?quality=60&width=300&height=300";
+                            $metaContent .= '<meta  property="og:image" content="'."$image".'" />';
+                        }
+                        
+                        return print($metaContent);
+                    }
+                }
+                
+                do_action("$hook");
+            }
         }
-    
-
-    $cont .= '<div class="dinotitulo"><h1 class="entry-title">'.$release->{'Title'}.'</h1></div>';
-    $cont .= '<div><div><h2 class="dinoresumo "><span class="dinolocal">'.$release->{'Place'}.' </span><span class="dinodata">'.$date->format("d/m/Y").'</span> - '.$release->{'Summary'}.'</h2></div>';
-    $cont .= '<div class="dinoarquivos">';
-    if($release->{'ImageID'} != NULL)
-    {
-        $imagem = substr($release->{'MainPictureUrl'}, 0, strpos($release->{'MainPictureUrl'}, "?"));
-        $cont .= '<img itemprop="photo" src="'.$imagem.'"/><br/>';
-    }
-
-    if($release->{'VideoUrl'} != NULL)
-    {
-        $cont .= '<br/><iframe src="'.$release->{'VideoUrl'}.'?rel=0" frameborder="0" allowfullscreen></iframe>';
-    }
-
-    $cont .= '</div><p class="dinocorpo entry-content"><br/>'.$release->{'Body'}.'</p>';
-
-    if($css["MostrarLink"] == "on")
-    {
-        $cont .= '<div class="dinolink"><a href="'.$release->{'SourceUrl'}.'">Leia mais</a></div>';
-    }
-
-    $cont .= '</div><style>.dinotitulo{'.$css["Titulo"].'}.dinolocal{'.$css["Local"].'}.dinodata{'.$css["Data"].'}.dinoresumo{'.$css["Resumo"].'}.dinocorpo{'.$css["Corpo"].'}.dinolink{'.$css["Link"].'}.dinoarquivos{'.$css["Arquivos"].'}'.$css["Livre"].'</style>';
-    
-
-
-    $analytics =  '<script type="text/javascript" title="Analytics">';
-           $analytics .= "var _gaq = _gaq || [];_gaq.push(['_setAccount', 'UA-28239442-1']);";
-           $analytics .= "_gaq.push(['_setCustomVar', 1, 'partner', '".$opti["Parceiro"]."', 3]);_gaq.push(['_setCustomVar', 2, 'release', '".$releaseid."', 3]);_gaq.push(['_trackPageview']);";
-           $analytics .= "(function () {var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);})();</script>";
-
-    $ti = get_bloginfo();
-    $script = '<script type="text/javascript" title="Titulo">var titulo = "'.$release->{'Title'}." | ".$ti.'"; if (document.title.search("newsdino") !== -1){ document.title = titulo; } </script>';
-
-    $posts[0]->post_content = $cont.$analytics.$script;
-
-    $hook = add_action("wp_head","page_meta");
-
-if(!function_exists("page_meta"))
-{
-    function page_meta(){
-        $releaseid2 = $_GET["releaseid"];
-        $url2 = "http://www.dino.com.br/api/news/".$releaseid2;
-        $json2 = dino_file_get_contents($url2);
-        $release2 = json_decode($json2);
-
-        $summary = encurtador( $release2->{'Summary'}, 160 );
-        $title = encurtador( $release2->{'Title'}, 170 );
-
-        $metaContent = '<meta name="description" content="'."$summary".'" />';
-        $metaContent .= '<meta property="og:title" content="'."$title".'" />';
-        $metaContent .= '<meta  property="og:description" content="'."$summary".'" />';
-
-        if($release2->{'ImageID'} != NULL)
-        {
-            $image = substr($release2->{'MainPictureUrl'}, 0, strpos($release2->{'MainPictureUrl'}, "?"))."?quality=60&width=300&height=300";
-            $metaContent .= '<meta  property="og:image" content="'."$image".'" />';   
+        
+        if ($wp_query->get('dino_plugin_list_is_called')) {
+            $list_options = get_option('dino_plugin_list');
+            $dino_options = get_option('dino_plugin_option');
+            $list_h = $list_options["Height"];
+            $list_w = $list_options["Width"];
+            $parceiro_id = $dino_options["Parceiro"];
+            
+            if ($list_h == null || $list_h == 0) {
+                $list_h = 900;
+            }
+            
+            if ($list_w == null || $list_w == 0) {
+                $list_w = 670;
+            }
+            
+            $posts[0]->post_title = "Releases DINO";
+            
+            $posts[0]->post_content = "<div style='width:".$list_w."px;'><script type='text/javascript'>var _dinopartId = new Array();_dinopartId.push('".$parceiro_id."'); var widgetHeight='".$list_h."px';</script><br /><script type='text/javascript' src='http://www.dino.com.br/embed/pagedlist.js'></script></div>";
+            
+            return $posts;
         }
-
-        return print($metaContent);
+        
+        return $posts;
     }
-}
-    do_action("$hook");
-}
-}
-
-if( $wp_query->get('dino_plugin_list_is_called') ) {
-
-$list_options = get_option('dino_plugin_list');
-$dino_options = get_option('dino_plugin_option');
-$list_h = $list_options["Height"];
-$list_w = $list_options["Width"];
-$parceiro_id = $dino_options["Parceiro"];
-
-if($list_h == NULL || $list_h == 0)
-{
-    $list_h = 900;
-}
-
-if($list_w == NULL || $list_w == 0)
-{
-    $list_w = 670;
-}
-
-    try
-    {
-        $posts[0]->post_title = "Releases DINO";
-    }
-        catch (Exception $e) {
-            //echo $e->getMessage();
-        }
-
-
-$posts[0]->post_content = "<div style='width:".$list_w."px;'><script type='text/javascript'>var _dinopartId = new Array();_dinopartId.push('".$parceiro_id."'); var widgetHeight='".$list_h."px';</script><br /><script type='text/javascript' src='http://www.dino.com.br/embed/pagedlist.js'></script></div>";
-
-return $posts;
-
-}
-
-return $posts;
-
-}
 }
 
 function dino_plugin_query_parser( $q ) {
-
-$pp = get_page_by_title(get_option( 'dino_plugin_page_title' ));
-$the_page_name = $pp->post_name;
-$the_page_id = get_option( 'dino_plugin_page_id' );
-
-$ppl = get_page_by_title(get_option( 'dino_plugin_pageList_title' ));
-$the_pageList_name = $ppl->post_name;
-$the_pageList_id = get_option( 'dino_plugin_pageList_id' );
-
-$qv = $q->query_vars;
-
-if( !$q->did_permalink AND ( isset( $q->query_vars['page_id'] ) ) AND ( intval($q->query_vars['page_id']) == $the_page_id ) ) {
-
-$q->set('dino_plugin_page_is_called', TRUE );
-return $q;
-
-}
-elseif( isset( $q->query_vars['pagename'] ) AND ( ($q->query_vars['pagename'] == $the_page_name) OR ($_pos_found = strpos($q->query_vars['pagename'],$the_page_name.'/') === 0) ) ) {
-
-$q->set('dino_plugin_page_is_called', TRUE );
-return $q;
-
-}elseif( !$q->did_permalink AND ( isset( $q->query_vars['page_id'] ) ) AND ( intval($q->query_vars['page_id']) == $the_pageList_id ) ) {
-
-$q->set('dino_plugin_page_is_called', FALSE );
-$q->set('dino_plugin_list_is_called', TRUE );
-return $q;
-
-}elseif( isset( $q->query_vars['pagename'] ) AND ( ($q->query_vars['pagename'] == $the_pageList_name) OR ($_pos_found = strpos($q->query_vars['pagename'],$the_pageList_name.'/') === 0) ) ) {
-
-$q->set('dino_plugin_list_is_called', TRUE );
-return $q;
-
-}else {
-
-$q->set('dino_plugin_list_is_called', FALSE );
-return $q;
-
-}
-
-
+    $pp = get_page_by_title(get_option('dino_plugin_page_title'));
+    $the_page_name = $pp->post_name;
+    $the_page_id = get_option('dino_plugin_page_id');
+    
+    $ppl = get_page_by_title(get_option('dino_plugin_pageList_title'));
+    $the_pageList_name = $ppl->post_name;
+    $the_pageList_id = get_option('dino_plugin_pageList_id');
+    
+    $qv = $q->query_vars;
+    
+    if (!$q->did_permalink AND ( isset( $q->query_vars['page_id'] ) ) AND ( intval($q->query_vars['page_id']) == $the_page_id ) ) {
+        $q->set('dino_plugin_page_is_called', true);        
+        return $q;
+    } elseif (isset($q->query_vars['pagename']) AND (($q->query_vars['pagename'] == $the_page_name) OR ($_pos_found = strpos($q->query_vars['pagename'], $the_page_name.'/') === 0))) {
+        $q->set('dino_plugin_page_is_called', true);        
+        return $q;
+    } elseif (!$q->did_permalink AND (isset( $q->query_vars['page_id'])) AND (intval($q->query_vars['page_id']) == $the_pageList_id)) {
+        $q->set('dino_plugin_page_is_called', false);
+        $q->set('dino_plugin_list_is_called', true);        
+        return $q;
+    } elseif (isset( $q->query_vars['pagename']) AND (($q->query_vars['pagename'] == $the_pageList_name) OR ($_pos_found = strpos($q->query_vars['pagename'], $the_pageList_name.'/') === 0))) {
+        $q->set('dino_plugin_list_is_called', true);        
+        return $q;
+    } else {
+        $q->set('dino_plugin_list_is_called', false);
+        return $q;
+    }
 }
 
 function dino_admin_menu() {
-add_options_page('DINO - WP Plugin Settings', 'DINO - WP', 'administrator',__FILE__, 'dino_setting_page',plugins_url('/images/icon.png',_FILE_ ));
-add_action( 'admin_init', 'register_dinosettings' );
+    add_options_page('DINO - WP Plugin Settings', 'DINO - WP', 'administrator', __FILE__, 'dino_setting_page', plugins_url('/images/icon.png', _FILE_));
+    add_action('admin_init', 'register_dinosettings');
 }
 
 function register_dinosettings() {
@@ -776,6 +704,5 @@ class wp_dino_widget extends WP_Widget {
 
 // register widget
 add_action('widgets_init', create_function('', 'return register_widget("wp_dino_widget");'));
-
 
 ?>
