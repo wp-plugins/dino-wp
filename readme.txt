@@ -4,7 +4,7 @@ Donate link:
 Tags: news, release, DINO, Brasil
 Requires at least: 3.5.1
 Tested up to: 4.2.4
-Stable tag: 1.0.14
+Stable tag: 1.0.15
 
 Ferramenta para vizualização de notícias distribuídas pelo DINO - Visibilidade Online.
 
@@ -39,6 +39,10 @@ A instalação do plugin é bastante simples.
 =
 
 == Changelog ==
+
+= 1.0.15 =
+* 2015-08-13
+* Correção de bug crítico originado na atualização anterior.
 
 = 1.0.14 =
 * 2015-08-11

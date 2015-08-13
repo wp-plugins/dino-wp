@@ -3,7 +3,7 @@
 Plugin Name: DINO WP
 Plugin URI: http://www.dino.com.br
 Description: Ferramenta para visualização de notícias distribuídas pelo DINO - Visibilidade Online.
-Version: 1.0.14
+Version: 1.0.15
 Author: DINO
 Author URI: http://www.dino.com.br
 License: GPL2
@@ -230,12 +230,11 @@ function dino_plugin_remove() {
 
 function dino_plugin_page_filter($posts) {
     global $wp_query;
-    global $_GET;
-
-    $posts[0] = new stdClass();
+    global $_GET;    
     
     if (!is_null($wp_query)) {
         if ($wp_query->get('dino_plugin_page_is_called')) {
+            $posts[0] = new stdClass();
             $releaseid = $_GET["releaseid"];
             $url = "http://www.dino.com.br/api/news/".$releaseid;
             $json = dino_file_get_contents($url);
@@ -313,6 +312,7 @@ function dino_plugin_page_filter($posts) {
         }
         
         if ($wp_query->get('dino_plugin_list_is_called')) {
+            $posts[0] = new stdClass();
             $list_options = get_option('dino_plugin_list');
             $dino_options = get_option('dino_plugin_option');
             $list_h = $list_options["Height"];
@@ -528,6 +528,10 @@ class wctest{
 	
     public function create_css_field(){
         $op = get_option('dino_plugin_option_css');
+        if (!isset($op['MostrarLink'])) {
+            $op['MostrarLink'] = "off";
+        }
+
 
         $cssLivre = "";
     $cssTitulo = "display:none;";
@@ -580,7 +584,7 @@ class wctest{
             <textarea style="width:100%; width: 80%; height:30px;" name="dino_plugin_option_css[Link]" id="dinocss7"><?php echo $op["Link"]?></textarea>
             <input type="hidden" value="<?php echo $cssLink ?>" class="padrao"/>
             <br/>
-            <label>Mostrar Link <input type="checkbox" name="dino_plugin_option_css[MostrarLink]" <?php checked( $op["MostrarLink"] == 'on',true); ?> /></label>
+            <label>Mostrar Link <input type="checkbox" name="dino_plugin_option_css[MostrarLink]" value="<?php echo $op["MostrarLink"];?>" <?php checked( $op["MostrarLink"] == "on",true); ?> /></label>
         </div>
 
         <div>
