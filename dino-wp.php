@@ -3,12 +3,12 @@
 Plugin Name: DINO WP
 Plugin URI: http://www.dino.com.br
 Description: Ferramenta para visualização de notícias distribuídas pelo DINO - Visibilidade Online.
-Version: 1.0.15
+Version: 1.0.16
 Author: DINO
 Author URI: http://www.dino.com.br
 License: GPL2
 */
-
+ 
 function _isCurl()
 {
     return function_exists('curl_version');
@@ -230,15 +230,23 @@ function dino_plugin_remove() {
 
 function dino_plugin_page_filter($posts) {
     global $wp_query;
-    global $_GET;    
+    global $_GET;
     
     if (!is_null($wp_query)) {
         if ($wp_query->get('dino_plugin_page_is_called')) {
-            $posts[0] = new stdClass();
+            $posts[0] = new stdClass();           
+
             $releaseid = $_GET["releaseid"];
-            $url = "http://www.dino.com.br/api/news/".$releaseid;
-            $json = dino_file_get_contents($url);
-            $release = json_decode($json);
+
+            $release = get_transient('dino_page_release_'.$releaseid);
+            if ($release === false) {
+                $url = "http://www.dino.com.br/api/news/".$releaseid;
+                $json = dino_file_get_contents($url);
+                $release = json_decode($json);
+                
+                set_transient('dino_page_release_'.$releaseid, $release, 3600);             
+            }
+
             $date = new DateTime($release->{'PublishedDate'});
             $css = get_option('dino_plugin_option_css');
             $opti = get_option('dino_plugin_option');
@@ -282,14 +290,21 @@ function dino_plugin_page_filter($posts) {
                 $ti = get_bloginfo();
                 $script = '<script type="text/javascript" title="Titulo">var titulo = "'.$release->{'Title'}." | ".$ti.'"; if (document.title.search("newsdino") !== -1){ document.title = titulo; } </script>';
                 $posts[0]->post_content = $cont.$analytics.$script;
+                $posts[0]->comment_status = "closed";
+                $posts[0]->ping_status = "closed";
                 $hook = add_action("wp_head", "page_meta");
                 
                 if (!function_exists("page_meta")) {
                     function page_meta() {
                         $releaseid2 = $_GET["releaseid"];
-                        $url2 = "http://www.dino.com.br/api/news/".$releaseid2;
-                        $json2 = dino_file_get_contents($url2);
-                        $release2 = json_decode($json2);
+
+                        $release2 = get_transient('dino_page_release_'.$releaseid2);
+                        if ($release2 === false) {
+                            $url2 = "http://www.dino.com.br/api/news/".$releaseid2;
+                            $json2 = dino_file_get_contents($url2);
+                            $release2 = json_decode($json2);
+                            set_transient('dino_page_release_'.$releaseid2, $release2, 3600);  
+                        }
                         
                         $summary = encurtador($release2->{'Summary'}, 160);
                         $title = encurtador($release2->{'Title'}, 170);
@@ -313,8 +328,10 @@ function dino_plugin_page_filter($posts) {
         
         if ($wp_query->get('dino_plugin_list_is_called')) {
             $posts[0] = new stdClass();
+
             $list_options = get_option('dino_plugin_list');
             $dino_options = get_option('dino_plugin_option');
+
             $list_h = $list_options["Height"];
             $list_w = $list_options["Width"];
             $parceiro_id = $dino_options["Parceiro"];
@@ -330,7 +347,9 @@ function dino_plugin_page_filter($posts) {
             $posts[0]->post_title = "Releases DINO";
             
             $posts[0]->post_content = "<div style='width:".$list_w."px;'><script type='text/javascript'>var _dinopartId = new Array();_dinopartId.push('".$parceiro_id."'); var widgetHeight='".$list_h."px';</script><br /><script type='text/javascript' src='http://www.dino.com.br/embed/pagedlist.js'></script></div>";
-            
+            $posts[0]->comment_status = "closed";
+            $posts[0]->ping_status = "closed";
+
             return $posts;
         }
         
@@ -689,6 +708,7 @@ class wp_dino_widget extends WP_Widget {
       // Fields
       $instance['height'] = strip_tags($new_instance['height']);
       $instance['width'] = strip_tags($new_instance['width']);
+      delete_transient('dino_widget_cache');
      return $instance;
 	}
 
@@ -696,7 +716,13 @@ class wp_dino_widget extends WP_Widget {
 	function widget($args, $instance) {
         extract( $args );
 
-        $options = get_option("dino_plugin_option");
+        $options =  get_transient('dino_widget_cache');
+        if($options === false)
+        {
+            $options = get_option("dino_plugin_option");
+            set_transient('dino_widget_cache', $options, 3600 * 24);
+        } 
+
         $pID = $options["Parceiro"];
 
         $h = $instance['height'];
